@@ -8,7 +8,22 @@ const loginUser = async (req , res) => {
         res.status(400);
         throw new Error('All field are mandatory!')
     }
+
+    const user = await User.findOne({email});
+
+    //compare password and hashpasswords
+    if(user && (await bcrypt.compare(password , user.password))){
+        const accesstoken = jwt.sign({
+            username : user.username ,
+            email : user.email,
+            id : user.id
+        })
+        res.status(200).json({accesstoken});
+    }
+
+
     res.json({message : 'login User'})
+
 }
 
 const currentUser =  async (req , res) => {
